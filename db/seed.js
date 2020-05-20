@@ -10,6 +10,7 @@ const {
     getPostsByUser,
     getPostById,
     getPostsByTagName,
+    getAllTags,
     } = require('./index');
 
 async function dropTables() {
@@ -87,7 +88,7 @@ async function createInitialUsers() {
         await createUser({ 
             username: 'glamgal',
             password: 'soglam',
-            name: 'Joshua',
+            name: 'Craig Pelton',
             location: 'Upper East Side'
         });
 
@@ -190,6 +191,10 @@ async function testDB() {
         console.log("Calling getPostsByTagName with #happy");
         const postsWithHappy = await getPostsByTagName("#happy");
         console.log("Posts with #happy:", postsWithHappy);
+
+        console.log("Getting all tags");
+        const allTags = await getAllTags();
+        console.log("All Tags: ", allTags);
 
         console.log("Finished database tests!");
     } catch (error) {
