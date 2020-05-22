@@ -88,12 +88,12 @@ postsRouter.delete('/:postId', requireActiveUser, async (req, res, next) => {
     };
 });
 
-postsRouter.get('/', async (req, res) => {
+postsRouter.get('/', async (req, res, next) => {
     try {
         const allPosts = await getAllPosts();
 
         const posts = allPosts.filter(post => {
-            if ((post.active || (req.user && post.author.id === req.user.id)) && post.author.active) {
+            if ((post.active || (req.user && post.author && post.author.id === req.user.id)) && post.author.active) {
                 return true;
             } else {
                 return false;
