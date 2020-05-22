@@ -1,5 +1,6 @@
 const usersRouter = require('express').Router();
-const { getAllUsers, getUserByUsername, createUser } = require('../db');
+const { requireUser, requireActiveUser } = require('./utils');
+const { getAllUsers, getUserByUsername, createUser, updateUser } = require('../db');
 const jwt = require('jsonwebtoken');
 
 usersRouter.use((req, res, next) => {
@@ -29,7 +30,9 @@ usersRouter.post('/login', async (req, res, next) => {
         const user = await getUserByUsername(username);
 
         if (user && user.password == password) {
-            const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
+            const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET, {
+                expiresIn: '1w'
+            });
             console.log(token)
             res.send({ 
                 message: "You're logged in!", 
@@ -74,6 +77,49 @@ usersRouter.post('/register', async (req, res, next) => {
             token
         });
 
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+usersRouter.delete('/:userId', requireActiveUser, async (req, res, next) => {
+    const { userId } = req.params;
+    const user = req.user;
+    try {
+        if (user && user.id === Number(userId)) {
+            const deactivatedUser = await updateUser(user.id, {active: false });
+            res.send({ deactivatedUser });
+            console.log("Deactivated User: ", deactivatedUser);
+        } else {
+            next({
+            name: "DeleteUserError",
+            message: "You cannot delete a username that is not yours"
+            })
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+usersRouter.patch('/:userId', requireUser, async (req, res, next) => {
+    const { userId } = req.params;
+    const user = req.user;
+    console.log("UserId: ", userId)
+    console.log('Req.user: ', req.user)
+    console.log("Req.user.id: ", req.user.id)
+    try {
+        if (user && user.id === Number(userId)) {
+            const activatedUser = await updateUser(user.id, {
+                active: true 
+            });
+            res.send({ activatedUser });
+            console.log("Activated User: ", activatedUser);
+        } else {
+            next({
+            name: "ActivateUserError",
+            message: "You cannot activate a username that is not yours"
+            })
+        };
     } catch ({ name, message }) {
         next({ name, message });
     };

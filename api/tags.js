@@ -9,11 +9,12 @@ tagsRouter.use((req, res, next) => {
 tagsRouter.get('/:tagName/posts', async (req, res, next) => {
     const { tagName } = req.params;
     console.log(tagName)
+    console.log(req.user)
     try {
         const postsWithTagName = await getPostsByTagName(tagName);
 
         const posts = postsWithTagName.filter(post => {
-            if (post.active && (req.user && post.author.id === req.user.id)) {
+            if (post.active && (req.user && post.author.id == req.user.id) && post.author.active) {
                 return true
             } else {
                 return false;

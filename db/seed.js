@@ -91,6 +91,12 @@ async function createInitialUsers() {
             name: 'Craig Pelton',
             location: 'Upper East Side'
         });
+        await createUser({ 
+            username: 'footballgood',
+            password: 'gojets',
+            name: 'Jim Bob Cooter',
+            location: 'East Rutherford, New Jersey'
+        });
 
         console.log("Finished creating users!");
     } catch (error) {
@@ -101,14 +107,14 @@ async function createInitialUsers() {
 
 async function createInitialPosts() {
     try {
-        const [albert, sandra, glamgal] = await getAllUsers();
+        const [ albert, sandra, glamgal, footballgood ] = await getAllUsers();
 
         console.log("Starting to create posts...");
         await createPost({
             authorId: albert.id,
             title: "First Post",
             content: "This is my first post. I hope I love writing blogs as much as I love writing them.",
-            tags: [ "#happy", "#youcandoanything" ]
+            tags: [ "#worst-day-ever", "#youcandoanything" ]
         });
 
         await createPost({
@@ -124,6 +130,13 @@ async function createInitialPosts() {
             content: "Do you even? I swear that half of you are posing.",
             tags: ["#happy", "#youcandoanything", "#catmandoeverything" ]
         });
+        await createPost({
+            authorId: footballgood.id,
+            title: "Football is life!",
+            content: "This is the Jets' year! You'll see!",
+            tags: ["#happy", "#youcandoanything", "#catmandoeverything" ]
+        });
+
         console.log("Finished creating posts!");
     } catch (error) {
         console.log("Error creating posts!");
@@ -152,12 +165,13 @@ async function testDB() {
         const users = await getAllUsers();
         console.log("All Users:", users);
 
-        console.log("Calling updateUser on users[0] & [4}");
+        console.log("Calling updateUser on users[0]");
         const updateUserResult = await updateUser(users[0].id, {
+            username: 'groovyash',
             name: "Ashley Williams",
             location: "Elk Grove, Michigan"
         });
-        console.log("Updated Users:", updateUserResult);
+        console.log("Updated User:", updateUserResult);
 
         console.log("Calling getAllPosts");
         const posts = await getAllPosts();
